@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MeetupApp.API.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MeetupApp.API
 {
@@ -33,6 +36,25 @@ namespace MeetupApp.API
             services.AddControllers();
             /* This makes cors avaiable here so that we can use it middleware */
             services.AddCors();
+
+            /* 
+               .AddSingleton : Create single instance of our repository throughout the application 
+               .AddTransient : Create one instance on each time they are requested
+               .AddScoped    : Create one instance per request within the scope. 
+                               Create one instance for each HTTP request but it uses the same instance of call within the same web request.
+            */
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +79,7 @@ namespace MeetupApp.API
                               .AllowAnyMethod()
                               .AllowAnyHeader());
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             /* map our controller endpoint to the application so that our api knows how to read the request */

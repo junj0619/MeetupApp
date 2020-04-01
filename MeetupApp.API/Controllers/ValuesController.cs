@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MeetupApp.API.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetupApp.API.Controllers
 {
+
     //http:localhost:5000/api/values
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
-    {
+    {/* Inherent ControllerBase give us access to Http responses and actions that we can use inside our controllers */
         private readonly DataContext _context;
         public ValuesController(DataContext context)
         {
@@ -28,6 +31,7 @@ namespace MeetupApp.API.Controllers
         }
 
         //Get api/values/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetValue(int id)
         {
