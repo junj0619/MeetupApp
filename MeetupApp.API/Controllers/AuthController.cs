@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using MeetupApp.API.Data;
 using MeetupApp.API.Dtos;
 using MeetupApp.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MeetupApp.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -19,12 +21,14 @@ namespace MeetupApp.API.Controllers
         private readonly IAuthRepository _authRepo;
         private readonly IConfiguration _config;
 
+
         public AuthController(IAuthRepository authRepo, IConfiguration config)
         {
             _config = config;
             _authRepo = authRepo;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
@@ -45,6 +49,7 @@ namespace MeetupApp.API.Controllers
             return StatusCode(201);
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
