@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using MeetupApp.API.Data;
 using MeetupApp.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,9 +38,17 @@ namespace MeetupApp.API
             /* ConfigureServices method is our DI container */
 
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers();
-            /* This makes cors avaiable here so that we can use it middleware */
+
+            /* In Core 3.0 by default service use System.text.Json but we want use NewtonsoftJson features in this project */
+            services.AddControllers().AddNewtonsoftJson(option =>
+            {
+                /* Ignore self-referencing loop detection { User => Photo => User } */
+                option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+
+            /* This makes cors available here so that we can use it middleware */
             services.AddCors();
+            services.AddAutoMapper(typeof(MeetupRepository).Assembly);
 
             /* 
                .AddSingleton : Create single instance of our repository throughout the application 
@@ -48,6 +57,8 @@ namespace MeetupApp.API
                                Create one instance for each HTTP request but it uses the same instance of call within the same web request.
             */
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IMeetupRepository, MeetupRepository>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {

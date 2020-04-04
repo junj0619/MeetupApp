@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 
 namespace MeetupApp.API.Helpers
@@ -10,6 +11,17 @@ namespace MeetupApp.API.Helpers
             response.Headers.Add("Application-Error", message);
             response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
             response.Headers.Add("Access-Control-Allow-Origin", "*");
+        }
+
+        public static int CalculateAge(this DateTime dob)
+        {
+            var age = DateTime.Now.Year - dob.Year;
+
+            /* if brithiday is not passed yet then age should minus one */
+            if (dob.AddYears(age) > DateTime.Now)
+                age--;
+
+            return age;
         }
 
     }
