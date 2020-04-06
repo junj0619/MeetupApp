@@ -58,7 +58,7 @@ namespace MeetupApp.API.Controllers
             if (userFromRepo == null) return Unauthorized();
 
             var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Username.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
                 new Claim(ClaimTypes.Name, userFromRepo.Username)
             };
 

@@ -1,3 +1,7 @@
+import { AuthGuard } from './_guards/auth.guard';
+import { PreventUnsavedChangesGuard } from './_guards/preventUnsavedChanges.guard';
+import { appRoute } from './app.routes';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
@@ -6,7 +10,7 @@ import { BsDropdownModule } from 'ngx-bootstrap';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-// nimport { NgxGalleryModule } from 'ngx-gallery';
+import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 
 import { AppComponent } from './app.component';
@@ -18,13 +22,12 @@ import { ListsComponent } from './lists/lists.component';
 import { MessageComponent } from './message/message.component';
 import { MemberCardComponent } from './member/member-card/member-card.component';
 import { MemberDetailComponent } from './member/member-detail/member-detail.component';
+import { MemberEditComponent } from './member/member-edit/member-edit.component';
 
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
 import { MemberListResolver } from './_resolvers/member-list.resolver';
-
-import { appRoute } from './app.routes';
-import { JwtModule } from '@auth0/angular-jwt';
+import { MemberEditResolver } from './_resolvers/member-edit.resolver';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
@@ -41,6 +44,7 @@ export function tokenGetter() {
     MessageComponent,
     MemberCardComponent,
     MemberDetailComponent,
+    MemberEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +67,7 @@ export function tokenGetter() {
     ErrorInterceptorProvider,
     MemberDetailResolver,
     MemberListResolver,
+    MemberEditResolver,
   ],
   bootstrap: [AppComponent],
 })

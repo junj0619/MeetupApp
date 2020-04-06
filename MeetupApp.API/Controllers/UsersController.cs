@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using MeetupApp.API.Data;
@@ -24,7 +26,7 @@ namespace MeetupApp.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetUser(int id)
         {
             var user = await _meetupRepository.GetUser(id);
             var userForReturn = _mapper.Map<UserForDetailDto>(user);
@@ -32,7 +34,7 @@ namespace MeetupApp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetUsers()
         {
             var users = await _meetupRepository.GetUsers();
             var usersForReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
@@ -40,18 +42,25 @@ namespace MeetupApp.API.Controllers
             return Ok(usersForReturn);
         }
 
-        // [HttpPost]
-        // public async Task<IActionResult> Add(User user)
-        // {
-        //     await _meetupRepository.Add(user);
-        //     return Ok();
-        // }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdate)
+        {
+            /* If given userId is not matching to Token user. Then return Unauthorized */
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
 
-        // [HttpDelete]
-        // public async Task<IActionResult> Delete(User user)
-        // {
-        //     await _meetupRepository.Delete(user);
-        //     return Ok();
-        // }
+            var userFromRepo = await _meetupRepository.GetUser(id);
+            _mapper.Map(userForUpdate, userFromRepo);
+
+            if (await _meetupRepository.SaveAll())
+            {
+                return NoContent();
+            }
+
+            throw new Exception($"Update user {id} failed on save.");
+        }
+
     }
 }

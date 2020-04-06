@@ -17,12 +17,14 @@ namespace MeetupApp.API.Helpers
                        option => option.MapFrom(src => src.DateOfBirth.CalculateAge()));
 
             CreateMap<User, UserForListDto>()
-            .ForMember(dest => dest.PhotoUrl, 
+            .ForMember(dest => dest.PhotoUrl,
                        option => option.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain).Url))
             .ForMember(dest => dest.Age,
                        option => option.MapFrom(src => src.DateOfBirth.CalculateAge()));
 
             CreateMap<Photo, PhotoForDetailDto>();
+
+            CreateMap<UserForUpdateDto, User>();
         }
     }
 }
