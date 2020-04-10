@@ -1,3 +1,4 @@
+import { Photo } from './../../_models/photo';
 import { AuthService } from './../../_services/auth.service';
 import { UserService } from './../../_services/user.service';
 import { AlertifyService } from './../../_services/alertify.service';
@@ -13,6 +14,7 @@ import { NgForm } from '@angular/forms';
 })
 export class MemberEditComponent implements OnInit {
   user: User;
+  photoUrl: string;
   @ViewChild('editForm') editForm: NgForm;
 
   /* warining user before they close browser tab */
@@ -34,6 +36,10 @@ export class MemberEditComponent implements OnInit {
     this.route.data.subscribe((data) => {
       this.user = data.user;
     });
+
+    this.authService.currentPhotoUrl.subscribe((photoUrl) => {
+      this.photoUrl = photoUrl;
+    });
   }
 
   updateUser() {
@@ -46,5 +52,9 @@ export class MemberEditComponent implements OnInit {
         },
         (error) => this.alertifyService.error(error)
       );
+  }
+
+  updateMainPhoto(photoUrl: string) {
+    this.user.photoUrl = photoUrl;
   }
 }

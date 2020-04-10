@@ -6,25 +6,30 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css']
+  styleUrls: ['./nav.component.css'],
 })
 export class NavComponent implements OnInit {
   model: any = {};
-
+  photoUrl: string;
   constructor(
     public authService: AuthService,
     private alertifyService: AlertifyService,
     private router: Router
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.authService.currentPhotoUrl.subscribe((photoUrl) => {
+      this.photoUrl = photoUrl;
+      console.log(this.photoUrl);
+    });
+  }
 
   login() {
     this.authService.login(this.model).subscribe(
-      response => {
+      (response) => {
         this.alertifyService.success('logged in successfully');
       },
-      error => {
+      (error) => {
         this.alertifyService.error(error);
       },
       () => {
@@ -39,7 +44,8 @@ export class NavComponent implements OnInit {
 
   logout() {
     localStorage.removeItem('token');
-    this.alertifyService.message('logout successfully.');
+    localStorage.removeItem('user');
+    this.alertifyService.success('logout successfully.');
     this.router.navigate(['/home']);
   }
 }

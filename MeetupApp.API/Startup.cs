@@ -48,6 +48,9 @@ namespace MeetupApp.API
 
             /* This makes cors available here so that we can use it middleware */
             services.AddCors();
+
+            /* Binding CloudinarySettings from appsettings.json */
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(MeetupRepository).Assembly);
 
             /* 

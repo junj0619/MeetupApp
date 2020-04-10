@@ -12,6 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -23,6 +24,7 @@ import { MessageComponent } from './message/message.component';
 import { MemberCardComponent } from './member/member-card/member-card.component';
 import { MemberDetailComponent } from './member/member-detail/member-detail.component';
 import { MemberEditComponent } from './member/member-edit/member-edit.component';
+import { PhotoEditComponent } from './member/photo-edit/photo-edit.component';
 
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
@@ -45,6 +47,7 @@ export function tokenGetter() {
     MemberCardComponent,
     MemberDetailComponent,
     MemberEditComponent,
+    PhotoEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +65,7 @@ export function tokenGetter() {
       },
     }),
     NgxGalleryModule,
+    FileUploadModule,
   ],
   providers: [
     ErrorInterceptorProvider,
