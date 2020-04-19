@@ -1,9 +1,10 @@
 <div class="container mt-4">
-  <h1>{{user.knownAs}}'s Profile</h1>
+  <h1>{{ user.knownAs }}'s Profile</h1>
   <div class="row">
     <div class="col-sm-4">
       <div class="card">
-        <img src="{{ user.photoUrl || 'assets/images/default.png' }}" alt="{{ user.knownAs }}" class="card-img-top img-thumbnail" />
+        <img src="{{ user.photoUrl || 'assets/images/default.png' }}" alt="{{ user.knownAs }}"
+          class="card-img-top img-thumbnail" />
         <div class="card-body">
           <div>
             <strong>Location:</strong>
@@ -15,11 +16,11 @@
           </div>
           <div>
             <strong>Last Active:</strong>
-            <p>{{ user.lastActive }}</p>
+            <p>{{ user.lastActive | timeago:false }}</p>
           </div>
           <div>
             <strong>Member Since:</strong>
-            <p>{{ user.created }}</p>
+            <p>{{ user.created | date }}</p>
           </div>
         </div>
         <div class="card-footer">

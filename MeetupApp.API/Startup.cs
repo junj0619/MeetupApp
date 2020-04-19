@@ -73,6 +73,9 @@ namespace MeetupApp.API
                     ValidateAudience = false
                 };
             });
+
+            /* plug in LogUserActivity pipeline that tracking user activity after request exected */
+            services.AddScoped<LogUserActivity>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

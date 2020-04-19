@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MeetupApp.API.Data;
 using MeetupApp.API.Dtos;
+using MeetupApp.API.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace MeetupApp.API.Controllers
 {
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
