@@ -73,6 +73,10 @@ export class PhotoEditComponent implements OnInit {
       };
 
       this.photos.push(photo);
+      if (res.isMain) {
+        photo.isMain = true;
+        this.authService.changePhotoUrl(photo.url);
+      }
     };
   }
 

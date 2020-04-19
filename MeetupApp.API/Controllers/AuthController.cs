@@ -40,15 +40,13 @@ namespace MeetupApp.API.Controllers
             var isExist = await _authRepo.UserExists(userForRegisterDto.Username);
             if (isExist) return BadRequest("Username already exists");
 
-            var userToCreated = new User
-            {
-                Username = userForRegisterDto.Username
-            };
-
+            var userToCreated = _mapper.Map<User>(userForRegisterDto);
             var createdUser = await _authRepo.Register(userToCreated, userForRegisterDto.Password);
 
-            //return Created("URL",userToCreated);
-            return StatusCode(201);
+            var userForReturn = _mapper.Map<UserForDetailDto>(createdUser);
+
+            return CreatedAtRoute("GetUser", new { Controller = "Users", id = createdUser.Id }, userForReturn);
+
         }
 
         [AllowAnonymous]
