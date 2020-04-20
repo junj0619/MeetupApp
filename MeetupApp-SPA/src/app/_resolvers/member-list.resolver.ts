@@ -8,13 +8,16 @@ import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MemberListResolver implements Resolve<User[]> {
+  currentPage = 1;
+  itemsPerPage = 5;
   constructor(
     private userService: UserService,
     private router: Router,
     private alertifyService: AlertifyService
   ) {}
+
   resolve(route: ActivatedRouteSnapshot): Observable<User[]> {
-    return this.userService.getUsers().pipe(
+    return this.userService.getUsers(this.currentPage, this.itemsPerPage).pipe(
       catchError((error) => {
         this.alertifyService.error(error);
         this.router.navigate(['/home']);

@@ -7,7 +7,11 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { BsDropdownModule } from 'ngx-bootstrap';
+import {
+  BsDropdownModule,
+  PaginationModule,
+  ButtonsModule,
+} from 'ngx-bootstrap';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -57,6 +61,7 @@ export function tokenGetter() {
     FormsModule,
     BrowserAnimationsModule,
     BsDropdownModule.forRoot(),
+    PaginationModule.forRoot(),
     TabsModule.forRoot(),
     RouterModule.forRoot(appRoute),
     JwtModule.forRoot({
@@ -71,6 +76,7 @@ export function tokenGetter() {
     ReactiveFormsModule,
     BsDatepickerModule.forRoot(),
     TimeagoModule.forRoot(),
+    ButtonsModule.forRoot(),
   ],
   providers: [
     ErrorInterceptorProvider,
