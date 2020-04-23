@@ -1,3 +1,4 @@
+import { ListResolver } from './_resolvers/list.resolver';
 import { AuthGuard } from './_guards/auth.guard';
 import { PreventUnsavedChangesGuard } from './_guards/preventUnsavedChanges.guard';
 import { appRoute } from './app.routes';
@@ -83,6 +84,7 @@ export function tokenGetter() {
     MemberDetailResolver,
     MemberListResolver,
     MemberEditResolver,
+    ListResolver,
   ],
   bootstrap: [AppComponent],
 })

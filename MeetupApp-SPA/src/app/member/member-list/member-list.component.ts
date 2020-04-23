@@ -60,7 +60,7 @@ export class MemberListComponent implements OnInit {
   pageChanged(event: any): void {
     this.pagination.currentPage = event.page;
     this.pagination.itemsPerPage = this.pagination.itemsPerPage;
-    this.loadUser();
+    this.loadUsers();
   }
 
   resetFilter() {
@@ -75,15 +75,15 @@ export class MemberListComponent implements OnInit {
     this.userParams.gender = this.gender;
     this.userParams.orderBy = this.orderBy;
 
-    this.loadUser();
+    this.loadUsers();
   }
 
   applyFilter() {
     this.userParams = Object.assign({}, this.filterForm.value);
-    this.loadUser();
+    this.loadUsers();
   }
 
-  loadUser() {
+  loadUsers() {
     this.userService
       .getUsers(
         this.pagination.currentPage,

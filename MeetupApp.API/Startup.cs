@@ -83,7 +83,8 @@ namespace MeetupApp.API
         {
             /*
                 Confgure method to configure our HTTP request pipeline. Everything we added here are middleware.
-                Middleware is software that can use to interact with our request as it's going through its journey through the pipeline.
+                Middleware is software that can use to interact with our request 
+                as it's going through its journey through the pipeline.
             */
             if (env.IsDevelopment())
             {

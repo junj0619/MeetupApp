@@ -26,9 +26,9 @@
 
     <div class="col">
       <div class="btn-group float-right">
-        <button type="button" class="btn btn-primary" formControlName="orderBy" (click)="loadUser()"
+        <button type="button" class="btn btn-primary" formControlName="orderBy" (click)="loadUsers()"
           [(ngModel)]="userParams.orderBy" btnRadio="lastActive">Last Active</button>
-        <button type="button" class="btn btn-primary" formControlName="orderBy" (click)="loadUser()"
+        <button type="button" class="btn btn-primary" formControlName="orderBy" (click)="loadUsers()"
           [(ngModel)]="userParams.orderBy" btnRadio="created">Newest Members</button>
       </div>
     </div>
