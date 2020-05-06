@@ -28,6 +28,14 @@ namespace MeetupApp.API.Helpers
             CreateMap<PhotoForCreationDto, Photo>();
             CreateMap<Photo, PhotoForReturnDto>();
             CreateMap<UserForRegisterDto, User>();
+            CreateMap<MessageForCreationDto, Message>().ReverseMap();
+
+
+            CreateMap<Message, MessageToReturnDto>()
+            .ForMember(dest => dest.SenderPhotoUrl,
+                       option => option.MapFrom(src => src.Sender.Photos.FirstOrDefault(p => p.IsMain).Url))
+            .ForMember(dest => dest.RecipientPhotoUrl,
+                       option => option.MapFrom(src => src.Recipient.Photos.FirstOrDefault(p => p.IsMain).Url));
         }
     }
 }

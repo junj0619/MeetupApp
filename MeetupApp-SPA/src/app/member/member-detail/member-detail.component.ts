@@ -1,6 +1,6 @@
 import { UserService } from './../../_services/user.service';
 import { AlertifyService } from './../../_services/alertify.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/_models/user';
 import {
@@ -19,6 +19,8 @@ export class MemberDetailComponent implements OnInit {
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
 
+  @ViewChild('memberTabs', { static: true }) memberTabs;
+
   constructor(
     private route: ActivatedRoute,
     private alertifyService: AlertifyService,
@@ -28,6 +30,11 @@ export class MemberDetailComponent implements OnInit {
   ngOnInit() {
     this.route.data.subscribe((data) => {
       this.user = data.user;
+    });
+
+    this.route.queryParams.subscribe((data) => {
+      const tabIndex = data.tabIndex > 0 ? data.tabIndex : 0;
+      this.memberTabs.tabs[tabIndex].active = true;
     });
 
     this.galleryOptions = [
@@ -54,5 +61,9 @@ export class MemberDetailComponent implements OnInit {
       });
     }
     return imageUrls;
+  }
+
+  selectTab(tabIndex) {
+    this.memberTabs.tabs[tabIndex].active = true;
   }
 }

@@ -2,7 +2,7 @@
 
 namespace MeetupApp.API.Migrations
 {
-    public partial class AddLikeEntity : Migration
+    public partial class AddLikesTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

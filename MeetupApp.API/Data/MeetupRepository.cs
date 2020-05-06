@@ -112,5 +112,52 @@ namespace MeetupApp.API.Data
                 return users.Likees.Where(u => u.LikerId == userId).Select(i => i.LikeeId);
             }
         }
+
+        public async Task<Message> GetMessage(int id)
+        {
+
+            return await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)
+        {
+            /* Include sender photo in the message result */
+            var messages = _context.Messages
+            .Include(m => m.Sender).ThenInclude(m => m.Photos)
+            .Include(m => m.Recipient).ThenInclude(m => m.Photos)
+            .AsQueryable();
+
+
+
+            if (messageParams.MessageContainer.Equals("Inbox", StringComparison.InvariantCultureIgnoreCase))
+            {
+                messages = messages.Where(m => m.RecipientId == messageParams.UserId && m.RecipientDeleted == false);
+            }
+            else if (messageParams.MessageContainer.Equals("Outbox", StringComparison.InvariantCultureIgnoreCase))
+            {
+                messages = messages.Where(m => m.SenderId == messageParams.UserId && m.SenderDeleted == false);
+            }
+            else
+            {
+                messages = messages.Where(m => m.RecipientId == messageParams.UserId && !m.RecipientDeleted && m.IsRead == false);
+            }
+
+
+            messages = messages.OrderByDescending(m => m.MessageSent);
+            return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
+        }
+
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        {
+            var messages = await _context.Messages
+                           .Include(m => m.Sender).ThenInclude(p => p.Photos)
+                           .Include(m => m.Recipient).ThenInclude(p => p.Photos)
+                           .Where(m => m.RecipientId == userId && m.SenderId == recipientId && !m.RecipientDeleted
+                                     || m.RecipientId == recipientId && m.SenderId == userId && !m.SenderDeleted)
+                           .OrderByDescending(m => m.MessageSent)
+                           .ToListAsync();
+
+            return messages;
+        }
     }
 }

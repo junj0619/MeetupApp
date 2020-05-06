@@ -1,6 +1,3 @@
-import { ListResolver } from './_resolvers/list.resolver';
-import { AuthGuard } from './_guards/auth.guard';
-import { PreventUnsavedChangesGuard } from './_guards/preventUnsavedChanges.guard';
 import { appRoute } from './app.routes';
 
 import { BrowserModule } from '@angular/platform-browser';
@@ -32,11 +29,14 @@ import { MemberCardComponent } from './member/member-card/member-card.component'
 import { MemberDetailComponent } from './member/member-detail/member-detail.component';
 import { MemberEditComponent } from './member/member-edit/member-edit.component';
 import { PhotoEditComponent } from './member/photo-edit/photo-edit.component';
+import { MemberMessageComponent } from './member/member-message/member-message.component';
 
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
 import { MemberListResolver } from './_resolvers/member-list.resolver';
 import { MemberEditResolver } from './_resolvers/member-edit.resolver';
+import { MessageResolver } from './_resolvers/message.resolver';
+import { ListResolver } from './_resolvers/list.resolver';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
@@ -55,6 +55,7 @@ export function tokenGetter() {
     MemberDetailComponent,
     MemberEditComponent,
     PhotoEditComponent,
+    MemberMessageComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,6 +86,7 @@ export function tokenGetter() {
     MemberListResolver,
     MemberEditResolver,
     ListResolver,
+    MessageResolver,
   ],
   bootstrap: [AppComponent],
 })
