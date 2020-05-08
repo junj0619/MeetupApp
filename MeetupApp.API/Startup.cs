@@ -31,13 +31,35 @@ namespace MeetupApp.API
         }
 
         public IConfiguration Configuration { get; }
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {   /* Use Sqlite in Development  */
+            services.AddDbContext<DataContext>(x =>
+            {
+                x.UseLazyLoadingProxies();
+                x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            }
+           );
+
+            ConfigureServices(services);
+        }
+
+        public void ConfigureProductionServices(IServiceCollection services)
+        {   /* Use MySQL in production  */
+            services.AddDbContext<DataContext>(x =>
+            {
+                x.UseLazyLoadingProxies();
+                x.UseMySql(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            ConfigureServices(services);
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             /* ConfigureServices method is our DI container */
 
-            services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            // services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
             /* In Core 3.0 by default service use System.text.Json but we want use NewtonsoftJson features in this project */
             services.AddControllers().AddNewtonsoftJson(option =>
@@ -123,10 +145,21 @@ namespace MeetupApp.API
             app.UseAuthentication();
             app.UseAuthorization();
 
+            /** For deployment purposes to server our angular application inside of API project **/
+            /* Ask Kestrel server to serve default files (index.html, default.html inside of wwwroot folder) */
+            app.UseDefaultFiles();
+            /* Add abilities to our webserver to user static files. */
+            app.UseStaticFiles();
+
             /* map our controller endpoint to the application so that our api knows how to read the request */
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                /* 
+                   Anything not response by API controller then use fallback controller to hanlde 
+                   In here we are using fallback controller to serve route in angular route request
+                */
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
