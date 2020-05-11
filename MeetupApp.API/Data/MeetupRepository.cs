@@ -26,8 +26,15 @@ namespace MeetupApp.API.Data
             _context.Remove(entity);
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id, bool isCurrentUser)
         {
+            var query = _context.Users.Include(p => p.Photos).AsQueryable();
+
+            if (isCurrentUser)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -82,7 +89,7 @@ namespace MeetupApp.API.Data
 
         public async Task<Photo> GetPhoto(int id)
         {
-            return await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Photos.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Photo> GetMainPhotoForUser(int userId)

@@ -10,8 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MeetupApp.API.Controllers
 {
 
-    //http:localhost:5000/api/values
-    [Authorize]
+    //http:localhost:5000/api/values    
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase

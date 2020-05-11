@@ -27,7 +27,7 @@ namespace MeetupApp.API.Helpers
                                     .User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var repo = resultContext.HttpContext.RequestServices.GetService<IMeetupRepository>();
-            var user = await repo.GetUser(userId);
+            var user = await repo.GetUser(userId, true);
             user.LastActive = DateTime.Now;
 
             await repo.SaveAll();

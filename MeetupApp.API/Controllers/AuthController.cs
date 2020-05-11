@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -8,26 +9,30 @@ using MeetupApp.API.Data;
 using MeetupApp.API.Dtos;
 using MeetupApp.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MeetupApp.API.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthRepository _authRepo;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signinManager;
 
-        public AuthController(IAuthRepository authRepo, IConfiguration config, IMapper mapper)
+        public AuthController(IConfiguration config, IMapper mapper,
+        UserManager<User> userManager, SignInManager<User> signinManager)
         {
             _mapper = mapper;
+            _userManager = userManager;
+            _signinManager = signinManager;
             _config = config;
-            _authRepo = authRepo;
         }
 
         [AllowAnonymous]
@@ -35,17 +40,19 @@ namespace MeetupApp.API.Controllers
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
 
-            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
-
-            var isExist = await _authRepo.UserExists(userForRegisterDto.Username);
-            if (isExist) return BadRequest("Username already exists");
-
             var userToCreated = _mapper.Map<User>(userForRegisterDto);
-            var createdUser = await _authRepo.Register(userToCreated, userForRegisterDto.Password);
 
-            var userForReturn = _mapper.Map<UserForDetailDto>(createdUser);
+            var result = await _userManager.CreateAsync(userToCreated, userForRegisterDto.Password);
 
-            return CreatedAtRoute("GetUser", new { Controller = "Users", id = createdUser.Id }, userForReturn);
+            var userForReturn = _mapper.Map<UserForDetailDto>(userToCreated);
+
+            if (result.Succeeded)
+            {
+                return CreatedAtRoute("GetUser",
+                new { Controller = "Users", id = userToCreated.Id }, userForReturn);
+            }
+
+            return BadRequest(result.Errors);
 
         }
 
@@ -53,14 +60,35 @@ namespace MeetupApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            var userFromRepo = await _authRepo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            var user = await _userManager.FindByNameAsync(userForLoginDto.Username);
 
-            if (userFromRepo == null) return Unauthorized();
+            var result = await _signinManager.CheckPasswordSignInAsync(user, userForLoginDto.Password, false);
 
-            var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+            if (result.Succeeded)
+            {
+                var appUser = _mapper.Map<UserForListDto>(user);
+                return Ok(new
+                {
+                    token = GenerateJwtToken(user).Result,
+                    user = appUser
+                });
+            }
+
+            return Unauthorized();
+        }
+
+        private async Task<string> GenerateJwtToken(User user)
+        {
+            var claims = new List<Claim> {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName)
             };
+            var roles = await _userManager.GetRolesAsync(user);
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
 
@@ -77,14 +105,7 @@ namespace MeetupApp.API.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            var user = _mapper.Map<UserForListDto>(userFromRepo);
-            return Ok(new
-            {
-                token = tokenHandler.WriteToken(token),
-                user
-            });
+            return tokenHandler.WriteToken(token);
         }
-
-
     }
 }

@@ -1,10 +1,13 @@
 using System;
 using MeetupApp.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetupApp.API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole,
+                               IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -12,7 +15,7 @@ namespace MeetupApp.API.Data
         }
 
         public DbSet<Value> Values { get; set; }
-        public DbSet<User> Users { get; set; }
+        // public DbSet<User> Users { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -20,6 +23,7 @@ namespace MeetupApp.API.Data
         /* Override EF creating table behavior on the database  */
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
             /* 
                 Define N to N relationships on Like Entity 
                 1) PrimaryKey(LikerId, LikeeId)
@@ -56,6 +60,15 @@ namespace MeetupApp.API.Data
                    .WithMany(m => m.MessagesReceived)
                    .OnDelete(DeleteBehavior.Restrict);
 
+
+            builder.Entity<UserRole>(userRole =>
+            {
+                userRole.HasKey(k => new { k.UserId, k.RoleId });
+                userRole.HasOne(u => u.User).WithMany(u => u.UserRoles).HasForeignKey(u => u.UserId).IsRequired();
+                userRole.HasOne(u => u.Role).WithMany(u => u.UserRoles).HasForeignKey(u => u.RoleId).IsRequired();
+            });
+
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
 
         }
     }

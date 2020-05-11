@@ -21,3 +21,17 @@ html,
 body {
   height: 100%;
 }
+
+
+.not-approved {
+  opacity: 0.2;
+}
+
+.img-wrapper {
+  position: relative;
+}
+
+.img-text {
+  position: absolute;
+  bottom: 30%;
+}

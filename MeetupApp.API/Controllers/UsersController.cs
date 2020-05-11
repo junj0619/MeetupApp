@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace MeetupApp.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
@@ -31,16 +30,17 @@ namespace MeetupApp.API.Controllers
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _meetupRepository.GetUser(id);
+            var isCurrentUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) == id;
+            var user = await _meetupRepository.GetUser(id, isCurrentUser);
             var userForReturn = _mapper.Map<UserForDetailDto>(user);
             return Ok(userForReturn);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
+        public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var user = await _meetupRepository.GetUser(userId);
+            var user = await _meetupRepository.GetUser(userId, true);
 
             userParams.UserId = userId;
             if (String.IsNullOrEmpty(userParams.Gender))
@@ -67,7 +67,7 @@ namespace MeetupApp.API.Controllers
                 return Unauthorized();
             }
 
-            var userFromRepo = await _meetupRepository.GetUser(id);
+            var userFromRepo = await _meetupRepository.GetUser(id, true);
             _mapper.Map(userForUpdate, userFromRepo);
 
             if (await _meetupRepository.SaveAll())
@@ -93,7 +93,7 @@ namespace MeetupApp.API.Controllers
                 return BadRequest("You already like this user.");
             }
 
-            var user = await _meetupRepository.GetUser(recipientId);
+            var user = await _meetupRepository.GetUser(recipientId, false);
             if (user == null)
             {
                 return NotFound();

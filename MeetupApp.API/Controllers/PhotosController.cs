@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 
 namespace MeetupApp.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/users/{userId}/photos")]
     public class PhotosController : ControllerBase
@@ -48,7 +47,7 @@ namespace MeetupApp.API.Controllers
                 return Unauthorized();
             }
 
-            var userFromRepo = await _meetupRepository.GetUser(userId);
+            var userFromRepo = await _meetupRepository.GetUser(userId, true);
             var file = photoForCreation.File;
             var uploadResult = new ImageUploadResult();
 
@@ -106,7 +105,7 @@ namespace MeetupApp.API.Controllers
             }
 
             /* Check user contains given photoId */
-            var user = await _meetupRepository.GetUser(userId);
+            var user = await _meetupRepository.GetUser(userId, true);
             if (!user.Photos.Any(p => p.Id == id))
             {
                 return Unauthorized();
@@ -147,7 +146,7 @@ namespace MeetupApp.API.Controllers
             }
 
             /* Check user contains given photoId */
-            var user = await _meetupRepository.GetUser(userId);
+            var user = await _meetupRepository.GetUser(userId, true);
             if (!user.Photos.Any(p => p.Id == id))
             {
                 return Unauthorized();

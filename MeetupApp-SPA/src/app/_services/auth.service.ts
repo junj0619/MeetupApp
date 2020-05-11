@@ -1,3 +1,4 @@
+import { element } from 'protractor';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -50,5 +51,21 @@ export class AuthService {
     const user: User = JSON.parse(localStorage.getItem('user'));
     user.photoUrl = url;
     localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  roleMatch(allowRoles): boolean {
+    let isMatch = false;
+
+    const tokenRoles: string[] = this.decodedToken.role;
+    if (allowRoles) {
+      allowRoles.forEach((element) => {
+        if (tokenRoles.includes(element)) {
+          isMatch = true;
+          return;
+        }
+      });
+    }
+
+    return isMatch;
   }
 }
